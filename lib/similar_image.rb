@@ -18,6 +18,8 @@ module SimilarImage
   ## classes:
 
   class ColorHistogram
+    attr_reader :hist
+
     def initialize(image)
       @hist = [0] * 64
       if image.class == Magick::Image
@@ -41,6 +43,12 @@ module SimilarImage
 
     def inspect
       "#<ColorHistogram: #{serialize}>"
+    end
+
+    def intersection(other)
+      d = @hist.inject(0){|i,j| i + j}
+      intsec = @hist.zip(other.hist).map{|a| a.min}.inject(0){|i,j| i + j}
+      intsec.to_f / d
     end
 
     private
