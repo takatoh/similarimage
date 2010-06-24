@@ -19,11 +19,18 @@ module SimilarImage
 
   class ColorHistogram
     def initialize(image)
-      @hist = []
-      (0..63).each{|c| @hist[c] = 0}
-      image.each_pixel do |pixel, c, r|
-        @hist[to_bin(a(pixel.red), a(pixel.green), a(pixel.blue))] += 1
+      @hist = [0] * 64
+      if image.class == Magick::Image
+        image.each_pixel do |pixel, c, r|
+          @hist[to_bin(a(pixel.red), a(pixel.green), a(pixel.blue))] += 1
+        end
+      else
+        @hist = image
       end
+    end
+
+    def self.parse(str)
+      self.new(str.split(":").map{|l| l.to_i})
     end
 
     def serialize
