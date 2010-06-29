@@ -14,7 +14,7 @@ def load_index(index_file)
 end
 
 def search(index, image)
-  source_hist = index[image]
+  source_hist = index[image] || SimilarImage.color_histogram(image)
   result = []
   index.each do |filename, hist|
     result << [source_hist.intersection(hist), filename]
