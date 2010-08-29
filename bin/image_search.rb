@@ -17,6 +17,11 @@ TEMPLATE = <<EOT
 
   <table>
     <tr><th>Score</th><th>Image</th><th>Path</th></tr>
+    <tr>
+      <td><b>ORIGINAL</b></td>
+      <td><img src="<%= @orig_image %>" /></td>
+      <td><%= @orig_image %></td>
+    </tr>
     <%- @result.each do |r| -%>
     <tr>
       <td><%= "%8.6f" % r[0] %></td>
@@ -44,7 +49,12 @@ def search(index, image)
   index.each do |filename, hist|
     result << [source_hist.intersection(hist), filename]
   end
-  result.sort{|a,b| b[0] <=> a[0]}[0..9]
+  result.sort!{|a,b| b[0] <=> a[0]}
+  if index[image]
+    result[0..10].delete_if{|a| a[1] == image}
+  else
+    result[0..9]
+  end
 end
 
 
@@ -59,8 +69,8 @@ opts.parse!
 
 
 index = load_index(ARGV.shift)
-src_image = ARGV.shift
-@result = search(index, src_image)
+@orig_image = ARGV.shift
+@result = search(index, @orig_image)
 if @options[:html]
   script = ERB.new(TEMPLATE, nil, "-")
   script.run
