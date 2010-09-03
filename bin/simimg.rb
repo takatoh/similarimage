@@ -1,0 +1,220 @@
+#! ruby
+#
+# simimg.rb
+#
+
+
+require 'similar_image'
+require 'find'
+require 'erb'
+require 'pathname'
+require 'optparse'
+
+
+SCRIPT_VERSION = "0.1.0"
+
+def main
+  parser = OptionParser.new
+  parser.banner = <<-EndBanner
+Usage: #{parser.program_name} <subcommand> [options] [args]
+
+Subcommands:
+    make        Make index file.
+    search      Search similar images.
+
+Global Options:
+  EndBanner
+  parser.on('-v', '--version', 'Show version.') {
+    puts "v#{SCRIPT_VERSION}"
+    exit 0
+  }
+  parser.on('-h', '--help', 'Show this message.') {
+    puts parser.help
+    exit 0
+  }
+
+  subcommands = {}
+  subcommands['make'] = MakeIndexCommand.new
+  subcommands['search'] = SearchCommand.new
+  begin
+    parser.order!
+    if ARGV.empty?
+      $stderr.puts 'no sub-command given'
+      $stderr.puts parser.help
+      exit 1
+    end
+    name = ARGV.shift
+    cmd = subcommands[name] or error "no such sub-command: #{name}"
+  rescue OptionParser::ParseError => err
+    $stderr.puts err.message
+    $stderr.puts parser.help
+    exit 1
+  end
+  begin
+    cmd.parse(ARGV)
+  rescue OptionParser::ParseError => err
+    $stderr.puts err.message
+    $stderr.puts cmd.help
+    exit 1
+  end
+  cmd.exec(ARGV)
+end
+
+def error(msg)
+  $stderr.puts "#{File.basename($0, '.*')}: error: #{msg}"
+  exit 1
+end
+
+
+class Subcommand
+  def parse(argv)
+    @parser.parse! argv
+  end
+
+  def help
+    @parser.help
+  end
+end
+
+
+class MakeIndexCommand < Subcommand
+
+  def initialize
+    @options ={}
+    @parser = OptionParser.new do |opt|
+      opt.banner = "Usage: #{File.basename($0, '.*')} make [options] <imagedir>"
+      opt.on('-a', '--append-to=FILE', 'Append to index file'){|v|
+        @options[:append] = v
+      }
+      opt.on_tail('-h', '--help', 'Show this massage.'){
+        print help
+        exit 0
+      }
+    end
+  end
+
+
+  def exec(argv)
+    if @options[:append]
+      index = load_index(@options[:append])
+      out = open(@options[:append], "a")
+    else
+      index = {}
+      out = $stdout
+    end
+
+    dir = argv.shift
+
+    Find.find(dir) do |f|
+      next unless File.file?(f)
+      next if index[f]
+      $stderr.puts f
+      hist = SimilarImage.color_histogram(f)
+      out.puts "#{f}  #{hist}"
+    end
+
+    out.close
+  end
+
+  def load_index(index_file)
+    index = {}
+    File.readlines(index_file).each do |l|
+      k, v = l.split(/ +/)
+      index[k] = SimilarImage::ColorHistogram.parse(v)
+    end
+    index
+  end
+
+end
+
+
+class SearchCommand < Subcommand
+
+  def initialize
+    @options ={}
+    @parser = OptionParser.new do |opt|
+      opt.banner = "Usage: #{File.basename($0, '.*')} search [options] <index> <image>"
+      opt.on('--html', 'Format to HTML.'){|v|
+        @options[:html] = true
+      }
+      opt.on_tail('-h', '--help', 'Show this massage.'){
+        print help
+        exit 0
+      }
+    end
+  end
+
+
+  TEMPLATE = <<EOT
+<html>
+<head>
+  <title>Similar images</title>
+</head>
+
+<body>
+  <h1>Similar images</h1>
+  <table>
+    <tr><th>Score</th><th>Image</th><th>Path</th></tr>
+    <tr>
+      <td><b>ORIGINAL</b></td>
+      <td><img src="<%= @orig_image %>" /></td>
+      <td><%= @orig_image %></td>
+    </tr>
+    <%- @result.each do |r| -%>
+    <tr>
+      <td><%= "%8.6f" % r[0] %></td>
+      <td><img src="<%= r[1] %>" /></td>
+      <td><%= r[1] %></td>
+    </tr>
+    <%- end -%>
+  </table>
+</body>
+</html>
+EOT
+
+
+  def exec(argv)
+    index = load_index(ARGV.shift)
+    @orig_image = ARGV.shift
+    @result = search(index, @orig_image)
+    if @options[:html]
+      script = ERB.new(TEMPLATE, nil, "-")
+      script.run(binding)
+    else
+      puts ""
+      puts "Original image: #{@orig_image}"
+      puts "Similar images:"
+      puts " Score     Path"
+      puts "------------------------------------------------------------"
+      @result.each {|i| puts "%8.6f  %s" % i }
+    end
+  end
+
+
+  def load_index(index_file)
+    index = {}
+    File.readlines(index_file).each do |l|
+      k, v = l.split(/ +/)
+      index[k] = SimilarImage::ColorHistogram.parse(v)
+    end
+    index
+  end
+
+  def search(index, image)
+    orig_hist = index[image] || SimilarImage.color_histogram(image)
+    res = []
+    index.each do |filename, hist|
+      res << [orig_hist.intersection(hist), filename]
+    end
+    res.sort!{|a,b| b[0] <=> a[0]}
+    if index[image]
+      res[0..10].delete_if{|a| a[1] == image}
+    else
+      res[0..9]
+    end
+  end
+
+end
+
+
+main
