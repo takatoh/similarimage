@@ -132,9 +132,12 @@ end
 class SearchCommand < Subcommand
 
   def initialize
-    @options ={}
+    @options ={ :num => 10 }
     @parser = OptionParser.new do |opt|
       opt.banner = "Usage: #{File.basename($0, '.*')} search [options] <index> <image>"
+      opt.on('-n=NUM', 'Top NUM of most similar images. defauot is 10.'){|v|
+        @options[:num] = v.to_i
+      }
       opt.on('--html', 'Format to HTML.'){|v|
         @options[:html] = true
       }
@@ -208,10 +211,11 @@ EOT
       res << [orig_hist.intersection(hist), filename]
     end
     res.sort!{|a,b| b[0] <=> a[0]}
+    n = @options[:num]
     if index[image]
-      res[0..10].delete_if{|a| a[1] == image}
+      res[0..n].delete_if{|a| a[1] == image}
     else
-      res[0..9]
+      res[0..(n-1)]
     end
   end
 
