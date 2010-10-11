@@ -12,7 +12,7 @@ require 'pathname'
 require 'optparse'
 
 
-SCRIPT_VERSION = "0.2.0"
+SCRIPT_VERSION = "0.3.0"
 
 def main
   parser = OptionParser.new
@@ -22,6 +22,7 @@ Usage: #{parser.program_name} <subcommand> [options] [args]
 Subcommands:
     index       Make index file.
     search      Search similar images.
+    compare     Compare images.
 
 Global Options:
   EndBanner
@@ -37,6 +38,7 @@ Global Options:
   subcommands = {}
   subcommands['index']  = MakeIndexCommand.new
   subcommands['search'] = SearchCommand.new
+  subcommands['compare'] = CompareCommand.new
   begin
     parser.order!
     if ARGV.empty?
@@ -220,6 +222,39 @@ EOT
   end
 
 end
+
+
+class CompareCommand < Subcommand
+
+  def initialize
+    @options ={}
+    @parser = OptionParser.new do |opt|
+      opt.banner = "Usage: #{File.basename($0, '.*')} compare [options] <file1> <file2>"
+      opt.on('-i', '--index=FILE', 'print to index file.'){|v| @options[:index] = v}
+      opt.on_tail('-h', '--help', 'Show this massage.'){
+        print help
+        exit 0
+      }
+    end
+  end
+
+  def exec(argv)
+    if @options[:index]
+      index = {}
+      File.readlines(@options[:index]).each do |l|
+        k, v = l.split(/ +/)
+        index[k] = SimilarImage::ColorHistogram.parse(v)
+      end
+      hist_1 = index[ARGV.shift]
+      hist_2 = index[ARGV.shift]
+    else
+      hist_1 = SimilarImage.color_histogram(ARGV.shift)
+      hist_2 = SimilarImage.color_histogram(ARGV.shift)
+    end
+    puts hist_1.intersection(hist_2)
+  end
+
+end   # of class CompareCommand
 
 
 main
