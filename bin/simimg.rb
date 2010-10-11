@@ -12,7 +12,7 @@ require 'pathname'
 require 'optparse'
 
 
-SCRIPT_VERSION = "0.1.0"
+SCRIPT_VERSION = "0.2.0"
 
 def main
   parser = OptionParser.new
@@ -20,7 +20,7 @@ def main
 Usage: #{parser.program_name} <subcommand> [options] [args]
 
 Subcommands:
-    make        Make index file.
+    index       Make index file.
     search      Search similar images.
 
 Global Options:
@@ -35,7 +35,7 @@ Global Options:
   }
 
   subcommands = {}
-  subcommands['make'] = MakeIndexCommand.new
+  subcommands['index']  = MakeIndexCommand.new
   subcommands['search'] = SearchCommand.new
   begin
     parser.order!
@@ -83,7 +83,7 @@ class MakeIndexCommand < Subcommand
   def initialize
     @options ={}
     @parser = OptionParser.new do |opt|
-      opt.banner = "Usage: #{File.basename($0, '.*')} make [options] <imagedir>"
+      opt.banner = "Usage: #{File.basename($0, '.*')} index [options] <imagedir>"
       opt.on('-a', '--append-to=FILE', 'Append to index file'){|v|
         @options[:append] = v
       }
