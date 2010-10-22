@@ -12,7 +12,7 @@ require 'pathname'
 require 'optparse'
 
 
-SCRIPT_VERSION = "0.3.0"
+SCRIPT_VERSION = "0.3.1"
 
 def main
   parser = OptionParser.new
@@ -180,6 +180,10 @@ EOT
 
 
   def exec(argv)
+    unless argv.size == 2
+      print @parser.help
+      exit 0
+    end
     index = load_index(ARGV.shift)
     @orig_image = ARGV.shift
     @result = search(index, @orig_image)
