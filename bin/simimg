@@ -1,7 +1,7 @@
-#! ruby
+#!/usr/bin/env ruby
 # -*- encoding: utf-8 -*-
 #
-# simimg.rb
+# simimg
 #
 
 
@@ -12,7 +12,7 @@ require 'pathname'
 require 'optparse'
 
 
-SCRIPT_VERSION = "0.3.1"
+SCRIPT_VERSION = SimilarImage::VERSION
 
 def main
   parser = OptionParser.new
