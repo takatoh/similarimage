@@ -1,7 +1,6 @@
-#! ruby
+#!/usr/bin/env ruby
 # -*- encoding: utf-8 -*-
 
-require 'rubygems'
 require 'rmagick'
 require 'optparse'
 
@@ -46,4 +45,3 @@ end
 end
 
 diff_img.write(options[:output])
-
