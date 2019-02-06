@@ -1,6 +1,11 @@
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'similar_image/version'
+
 SPEC = Gem::Specification.new do |s|
   s.name             = "similarimage"
-  s.version          = "0.3.1"
+  s.version          = SimilarImage::VERSION
   s.summary          = "Search similar images."
   s.description      = "Search similar images."
   s.platform         = Gem::Platform::RUBY
@@ -13,6 +18,8 @@ SPEC = Gem::Specification.new do |s|
   s.files            = %w( bin/simimg
                            bin/image_diff
                            lib/similar_image.rb
+                           lib/similar_image/similar_image.rb
+                           lib/similar_image/version.rb
                          )
   s.require_path     = "lib"
   s.has_rdoc         = true
