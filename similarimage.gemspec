@@ -1,5 +1,3 @@
-require 'rubygems'
-
 SPEC = Gem::Specification.new do |s|
   s.name             = "similarimage"
   s.version          = "0.3.1"
