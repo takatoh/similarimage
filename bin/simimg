@@ -180,13 +180,13 @@ class SearchCommand < Subcommand
     <tr>
       <td><b>ORIGINAL</b></td>
       <td><img src="<%= @orig_image_url %>" /></td>
-      <td><%= @orig_image_url %></td>
+      <td><a href="<%= @orig_image_url %>"><%= @orig_image_url %></a></td>
     </tr>
     <%- @result.each do |r| -%>
     <tr>
       <td><%= "%8.6f" % r[0] %></td>
       <td><img src="<%= r[1] %>" /></td>
-      <td><%= r[1] %></td>
+      <td><a href="<%= r[1] %>"><%= r[1] %></a></td>
     </tr>
     <%- end -%>
   </table>
