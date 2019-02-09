@@ -53,7 +53,11 @@ module SimilarImage
     private
 
     def a(n)
-      n >> 14
+#      n >> 14
+      while n >= 4
+        n = n / 2
+      end
+      n
     end
 
     def to_bin(r, g, b)
