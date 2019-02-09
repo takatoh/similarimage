@@ -148,7 +148,7 @@ class SearchCommand < Subcommand
       opt.on('-n=NUM', 'Top NUM of most similar images. defauot is 10.'){|v|
         @options[:num] = v.to_i
       }
-      opt.on('-p', '--prefx=PATH', 'Add prefix to file path'){|v|
+      opt.on('-p', '--prefix=PATH', 'Add prefix to file path'){|v|
         @options[:prefix] = v
       }
       opt.on('--html', 'Format to HTML.'){|v|
