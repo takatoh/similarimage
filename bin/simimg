@@ -148,6 +148,9 @@ class SearchCommand < Subcommand
       opt.on('-n=NUM', 'Top NUM of most similar images. defauot is 10.'){|v|
         @options[:num] = v.to_i
       }
+      opt.on('-p', '--prefx=PATH', 'Add prefix to file path'){|v|
+        @options[:prefix] = v
+      }
       opt.on('--html', 'Format to HTML.'){|v|
         @options[:html] = true
       }
@@ -195,6 +198,9 @@ EOT
     index = load_index(ARGV.shift)
     @orig_image = ARGV.shift
     @result = search(index, @orig_image)
+    if @options[:prefix]
+      @result.map!{|x| [x[0], File.join(@options[:prefix], x[1])] }
+    end
     if @options[:html]
       script = ERB.new(TEMPLATE, nil, "-")
       script.run(binding)
