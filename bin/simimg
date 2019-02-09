@@ -142,17 +142,22 @@ end
 class SearchCommand < Subcommand
 
   def initialize
-    @options ={ :num => 10 }
+    @options ={
+      :num => 10
+    }
     @parser = OptionParser.new do |opt|
       opt.banner = "Usage: #{File.basename($0, '.*')} search [options] <index> <image>"
       opt.on('-n=NUM', 'Top NUM of most similar images. defauot is 10.'){|v|
         @options[:num] = v.to_i
       }
-      opt.on('-p', '--prefix=PATH', 'Add prefix to file path'){|v|
+      opt.on('-p', '--prefix=PATH', 'Add prefix to file path.'){|v|
         @options[:prefix] = v
       }
       opt.on('--html', 'Format to HTML.'){|v|
         @options[:html] = true
+      }
+      opt.on('--html-prefix=URL', 'Add prefix for URL.'){|v|
+        @options[:html_prefix] = v
       }
       opt.on_tail('-h', '--help', 'Show this massage.'){
         print help
@@ -210,7 +215,10 @@ EOT
       puts "Similar images:"
       puts " Score     Path"
       puts "------------------------------------------------------------"
-      @result.each {|i| puts "%8.6f  %s" % i }
+      @result.each do |i|
+        path = @options[:html_prefix] ? File.join(@options[:html_prefix], i[1]) : i[1]
+        printf("%8.6f  %s\n", i[0], path)
+      end
     end
   end
 
