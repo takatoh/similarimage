@@ -117,11 +117,11 @@ class MakeIndexCommand < Subcommand
     Find.find(dir) do |f|
       f = Pathname.new(f)
       next unless f.file?
-      fr = f.relative_path_from(@options[:prefix]) if @options[:prefix]
+      fr = @options[:prefix] ? f.relative_path_from(@options[:prefix]) : f
       next if index[fr.to_s]
-      $stderr.puts f
+      $stderr.puts f.to_s
       hist = SimilarImage.color_histogram(f.to_s)
-      out.puts "#{fr}  #{hist}"
+      out.puts "#{fr.to_s}  #{hist}"
     end
 
     out.close
