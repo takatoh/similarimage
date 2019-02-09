@@ -89,6 +89,9 @@ class MakeIndexCommand < Subcommand
       opt.on('-a', '--append-to=FILE', 'Append to index file'){|v|
         @options[:append] = v
       }
+      opt.on('-p', '--prefix=PATH', 'Add prefix path'){|v|
+        @options[:prefix] = v
+      }
       opt.on_tail('-h', '--help', 'Show this massage.'){
         print help
         exit 0
@@ -107,13 +110,18 @@ class MakeIndexCommand < Subcommand
     end
 
     dir = argv.shift
+    if @options[:prefix]
+      dir = File.join(@options[:prefix], dir)
+    end
 
     Find.find(dir) do |f|
-      next unless File.file?(f)
-      next if index[f]
+      f = Pathname.new(f)
+      next unless f.file?
+      fr = f.relative_path_from(@options[:prefix]) if @options[:prefix]
+      next if index[fr.to_s]
       $stderr.puts f
-      hist = SimilarImage.color_histogram(f)
-      out.puts "#{f}  #{hist}"
+      hist = SimilarImage.color_histogram(f.to_s)
+      out.puts "#{fr}  #{hist}"
     end
 
     out.close
