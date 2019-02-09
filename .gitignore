@@ -3,5 +3,8 @@
 *.png
 *.gif
 *.bmp
+*.txt
+*.html
 rdoc/
 pkg/
+.ruby-version
