@@ -195,9 +195,9 @@ EOT
       print @parser.help
       exit 0
     end
-    index = load_index(ARGV.shift)
+    @index = load_index(ARGV.shift)
     @orig_image = ARGV.shift
-    @result = search(index, @orig_image, @options[:prefix])
+    @result = search
     if @options[:prefix]
       @result.map!{|x| [x[0], File.join(@options[:prefix], x[1])] }
     end
@@ -224,20 +224,20 @@ EOT
     index
   end
 
-  def search(index, image, prefix)
-    image = Pathname.new(image)
-    image_r = image.relative_path_from(prefix)
-    orig_hist = index[image_r.to_s] || SimilarImage.color_histogram(image)
+  def search
+    image = Pathname.new(@orig_image)
+    image_r = @options[:prefix] ? image.relative_path_from(@options[:prefix]) : image
+    orig_hist = @index[image_r.to_s] || SimilarImage.color_histogram(image)
     res = []
-    index.each do |filename, hist|
+    @index.each do |filename, hist|
       res << [orig_hist.intersection(hist), filename]
     end
     res.sort!{|a,b| b[0] <=> a[0]}
     n = @options[:num]
-    if index[image_r.to_s]
+    if @index[image_r.to_s]
       res[0..n].delete_if{|a| a[1] == image_r.to_s}
     else
-      res[0..(n-1)]
+      res[0...n]
     end
   end
 
