@@ -1,7 +1,4 @@
 # -*- encoding: utf-8 -*-
-#
-# SimilarImage
-#
 
 require 'rmagick'
 
@@ -55,8 +52,8 @@ module SimilarImage
     def to_bin(r, g, b)
       (r << 4) + (g << 2) + b
     end
-  end   # of ColorHistogram
+  end   # of class ColorHistogram
 
 
-end   # of SimilarImage
+end   # of module SimilarImage
 
