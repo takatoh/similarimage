@@ -3,7 +3,6 @@
 # SimilarImage
 #
 
-require 'rubygems'
 require 'rmagick'
 
 
@@ -54,11 +53,11 @@ module SimilarImage
     private
 
     def a(n)
-      (n/64).floor
+      n >> 14
     end
 
     def to_bin(r, g, b)
-      r * 4 * 4 + g * 4 + b * 1
+      (r << 4) + (g << 2) + b
     end
   end   # of ColorHistogram
 
