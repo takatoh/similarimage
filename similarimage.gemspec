@@ -1,4 +1,5 @@
-# coding: utf-8
+# encoding: utf-8
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'similar_image/version'
@@ -18,7 +19,7 @@ SPEC = Gem::Specification.new do |s|
   s.files            = %w( bin/simimg
                            bin/image_diff
                            lib/similar_image.rb
-                           lib/similar_image/similar_image.rb
+                           lib/similar_image/color_histogram.rb
                            lib/similar_image/version.rb
                          )
   s.require_path     = "lib"
