@@ -8,14 +8,6 @@ require 'rmagick'
 
 module SimilarImage
 
-  def self.color_histogram(file)
-    img = Magick::Image.read(file).first
-    ColorHistogram.new(img)
-  end
-
-
-  ## classes:
-
   class ColorHistogram
     attr_reader :hist
 
