@@ -179,8 +179,8 @@ class SearchCommand < Subcommand
     <tr><th>Score</th><th>Image</th><th>Path</th></tr>
     <tr>
       <td><b>ORIGINAL</b></td>
-      <td><img src="<%= @orig_image %>" /></td>
-      <td><%= @orig_image %></td>
+      <td><img src="<%= @orig_image_url %>" /></td>
+      <td><%= @orig_image_url %></td>
     </tr>
     <%- @result.each do |r| -%>
     <tr>
@@ -207,6 +207,12 @@ EOT
       @result.map!{|x| [x[0], File.join(@options[:prefix], x[1])] }
     end
     if @options[:html]
+     if @options[:html_prefix]
+        @orig_image_url = File.join(@options[:html_prefix], @orig_image)
+        @result.map!{|r| [r[0], File.join(@options[:html_prefix], r[1])]}
+      else
+        @orig_image_url = @orig_image
+      end
       script = ERB.new(TEMPLATE, nil, "-")
       script.run(binding)
     else
