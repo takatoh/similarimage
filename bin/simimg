@@ -144,7 +144,7 @@ class SearchCommand < Subcommand
     }
     @parser = OptionParser.new do |opt|
       opt.banner = "Usage: #{File.basename($0, '.*')} search [options] <index> <image>"
-      opt.on('-n=NUM', 'Top NUM of most similar images. defauot is 10.'){|v|
+      opt.on('-n=NUM', 'Top NUM of most similar images. default is 10.'){|v|
         @options[:num] = v.to_i
       }
       opt.on('-p', '--prefix=PATH', 'Specify prefix of orig image path.'){|v|
