@@ -110,9 +110,9 @@ class MakeIndexCommand < Subcommand
     end
 
     dir = argv.shift
-    if @options[:prefix]
-      dir = File.join(@options[:prefix], dir)
-    end
+#    if @options[:prefix]
+#      dir = File.join(@options[:prefix], dir)
+#    end
 
     Find.find(dir) do |f|
       f = Pathname.new(f)
