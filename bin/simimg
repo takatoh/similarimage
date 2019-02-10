@@ -110,9 +110,6 @@ class MakeIndexCommand < Subcommand
     end
 
     dir = argv.shift
-#    if @options[:prefix]
-#      dir = File.join(@options[:prefix], dir)
-#    end
 
     Find.find(dir) do |f|
       f = Pathname.new(f)
@@ -203,9 +200,6 @@ EOT
     @index = load_index(ARGV.shift)
     @orig_image = ARGV.shift
     @result = search
-#    if @options[:prefix]
-#      @result.map!{|x| [x[0], File.join(@options[:prefix], x[1])] }
-#    end
     if @options[:html]
       if @options[:html_prefix]
         orig_image = if @options[:prefix]
