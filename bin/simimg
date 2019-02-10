@@ -150,7 +150,7 @@ class SearchCommand < Subcommand
       opt.on('-n=NUM', 'Top NUM of most similar images. defauot is 10.'){|v|
         @options[:num] = v.to_i
       }
-      opt.on('-p', '--prefix=PATH', 'Add prefix to file path.'){|v|
+      opt.on('-p', '--prefix=PATH', 'Specify prefix of orig image path.'){|v|
         @options[:prefix] = v
       }
       opt.on('--html', 'Format to HTML.'){|v|
@@ -203,12 +203,13 @@ EOT
     @index = load_index(ARGV.shift)
     @orig_image = ARGV.shift
     @result = search
-    if @options[:prefix]
-      @result.map!{|x| [x[0], File.join(@options[:prefix], x[1])] }
-    end
+#    if @options[:prefix]
+#      @result.map!{|x| [x[0], File.join(@options[:prefix], x[1])] }
+#    end
     if @options[:html]
-     if @options[:html_prefix]
-        @orig_image_url = File.join(@options[:html_prefix], @orig_image)
+      if @options[:html_prefix]
+        orig_image = Pathname.new(@orig_image).relative_path_from(@options[:prefix]).to_s
+        @orig_image_url = File.join(@options[:html_prefix], orig_image)
         @result.map!{|r| [r[0], File.join(@options[:html_prefix], r[1])]}
       else
         @orig_image_url = @orig_image
