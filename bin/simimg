@@ -208,7 +208,11 @@ EOT
 #    end
     if @options[:html]
       if @options[:html_prefix]
-        orig_image = Pathname.new(@orig_image).relative_path_from(@options[:prefix]).to_s
+        orig_image = if @options[:prefix]
+          Pathname.new(@orig_image).relative_path_from(@options[:prefix]).to_s
+        else
+          @orig_image
+        end
         @orig_image_url = File.join(@options[:html_prefix], orig_image)
         @result.map!{|r| [r[0], File.join(@options[:html_prefix], r[1])]}
       else
