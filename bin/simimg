@@ -90,7 +90,7 @@ class MakeIndexCommand < Subcommand
         @options[:append] = v
       }
       opt.on('-p', '--prefix=PATH', 'Add prefix path'){|v|
-        @options[:prefix] = v
+        @options[:prefix] = Pathname.new(v)
       }
       opt.on_tail('-h', '--help', 'Show this massage.'){
         print help
