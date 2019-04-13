@@ -214,9 +214,9 @@ EOT
         @result.map! do |r|
           file_url = File.join(@options[:html_prefix], r[1])
           if @options[:sombrero_url]
-            p r[1]
+#            p r[1]
             md5 = /[0-9a-f]{32}/.match(r[1])[0]
-            p md5
+#            p md5
             sombrero_url = File.join(@options[:sombrero_url], "photo/md5", md5)
             [r[0], file_url, sombrero_url]
           else
@@ -235,7 +235,14 @@ EOT
       puts " Score     Path"
       puts "------------------------------------------------------------"
       @result.each do |i|
-        path = @options[:html_prefix] ? File.join(@options[:html_prefix], i[1]) : i[1]
+        path = if @options[:html_prefix]
+          File.join(@options[:html_prefix], i[1])
+        elsif @options[:sombrero_url]
+          md5 = /[0-9a-f]{32}/.match(i[1])[0]
+          File.join(@options[:sombrero_url], "photo/md5", md5)
+        else
+          i[1]
+        end
         printf("%8.6f  %s\n", i[0], path)
       end
     end
