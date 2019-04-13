@@ -156,6 +156,9 @@ class SearchCommand < Subcommand
       opt.on('--html-prefix=URL', 'Add prefix for URL.'){|v|
         @options[:html_prefix] = v
       }
+      opt.on('--sombrero-url=URL', 'Link to Sombrero.'){|v|
+        @options[:sombrero_url] = v
+      }
       opt.on_tail('-h', '--help', 'Show this massage.'){
         print help
         exit 0
@@ -183,7 +186,7 @@ class SearchCommand < Subcommand
     <tr>
       <td><%= "%8.6f" % r[0] %></td>
       <td><img src="<%= r[1] %>" /></td>
-      <td><a href="<%= r[1] %>" target="_blank"><%= r[1] %></a></td>
+      <td><a href="<%= r[2] %>" target="_blank"><%= r[2] %></a></td>
     </tr>
     <%- end -%>
   </table>
@@ -208,7 +211,18 @@ EOT
           @orig_image
         end
         @orig_image_url = File.join(@options[:html_prefix], orig_image)
-        @result.map!{|r| [r[0], File.join(@options[:html_prefix], r[1])]}
+        @result.map! do |r|
+          file_url = File.join(@options[:html_prefix], r[1])
+          if @options[:sombrero_url]
+            p r[1]
+            md5 = /[0-9a-f]{32}/.match(r[1])[0]
+            p md5
+            sombrero_url = File.join(@options[:sombrero_url], "photo/md5", md5)
+            [r[0], file_url, sombrero_url]
+          else
+            [r[0], file_url, file_url]
+          end
+        end
       else
         @orig_image_url = @orig_image
       end
