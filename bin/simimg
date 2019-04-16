@@ -148,7 +148,7 @@ class SearchCommand < Subcommand
         @options[:num] = v.to_i
       }
       opt.on('-p', '--prefix=PATH', 'Specify prefix of orig image path.'){|v|
-        @options[:prefix] = v
+        @options[:prefix] = Pathname.new(v)
       }
       opt.on('--html', 'Format to HTML.'){|v|
         @options[:html] = true
@@ -203,28 +203,28 @@ EOT
     @index = load_index(ARGV.shift)
     @orig_image = ARGV.shift
     @result = search
+    @orig_image = if @options[:prefix]
+      Pathname.new(@orig_image).relative_path_from(@options[:prefix]).to_s
+    else
+      @orig_image
+    end
     if @options[:html]
       if @options[:html_prefix]
-        orig_image = if @options[:prefix]
-          Pathname.new(@orig_image).relative_path_from(@options[:prefix]).to_s
-        else
-          @orig_image
-        end
-        @orig_image_url = File.join(@options[:html_prefix], orig_image)
+        @orig_image_url = File.join(@options[:html_prefix], @orig_image)
         @result.map! do |r|
           file_url = File.join(@options[:html_prefix], r[1])
-          if @options[:sombrero_url]
-#            p r[1]
-            md5 = /[0-9a-f]{32}/.match(r[1])[0]
-#            p md5
-            sombrero_url = File.join(@options[:sombrero_url], "photo/md5", md5)
-            [r[0], file_url, sombrero_url]
-          else
-            [r[0], file_url, file_url]
-          end
+          [r[0], file_url, file_url]
+        end
+      elsif @options[:sombrero_url]
+        @result.map! do |r|
+          file_url = @options[:html_prefix] ? File.join(@options[:html_prefix], r[1]) : r[1]
+          md5 = /[0-9a-f]{32}/.match(r[1])[0]
+          sombrero_url = File.join(@options[:sombrero_url], "photo/md5", md5)
+          [r[0], file_url, sombrero_url]
         end
       else
         @orig_image_url = @orig_image
+        @result.map!{|r| [r[0], r[1], r[1]] }
       end
       script = ERB.new(TEMPLATE, nil, "-")
       script.run(binding)
