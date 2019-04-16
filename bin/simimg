@@ -85,7 +85,7 @@ class MakeIndexCommand < Subcommand
   def initialize
     @options ={}
     @parser = OptionParser.new do |opt|
-      opt.banner = "Usage: #{File.basename($0, '.*')} index [options] <imagedir>"
+      opt.banner = "Usage: #{opt.program_name} index [options] <imagedir>"
       opt.on('-a', '--append-to=FILE', 'Append to index file'){|v|
         @options[:append] = v
       }
@@ -143,7 +143,7 @@ class SearchCommand < Subcommand
       :num => 10
     }
     @parser = OptionParser.new do |opt|
-      opt.banner = "Usage: #{File.basename($0, '.*')} search [options] <index> <image>"
+      opt.banner = "Usage: #{opt.program_name} search [options] <index> <image>"
       opt.on('-n=NUM', 'Top NUM of most similar images. default is 10.'){|v|
         @options[:num] = v.to_i
       }
@@ -283,7 +283,7 @@ class CompareCommand < Subcommand
   def initialize
     @options ={}
     @parser = OptionParser.new do |opt|
-      opt.banner = "Usage: #{File.basename($0, '.*')} compare [options] <file1> <file2>"
+      opt.banner = "Usage: #{opt.program_name} compare [options] <file1> <file2>"
       opt.on('-i', '--index=FILE', 'print to index file.'){|v| @options[:index] = v}
       opt.on_tail('-h', '--help', 'Show this massage.'){
         print help
