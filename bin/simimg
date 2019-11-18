@@ -180,7 +180,7 @@ class SearchCommand < Subcommand
     <tr>
       <td><b>ORIGINAL</b></td>
       <td><img src="<%= @orig_image_url %>" /></td>
-      <td><a href="<%= @orig_image_url %>" target="_blank"><%= @orig_image_url %></a></td>
+      <td><a href="<%= @orig_sombrero_url %>" target="_blank"><%= @orig_sombrero_url %></a></td>
     </tr>
     <%- @result.each do |r| -%>
     <tr>
@@ -211,11 +211,14 @@ EOT
     if @options[:html]
       if @options[:html_prefix]
         @orig_image_url = File.join(@options[:html_prefix], @orig_image)
+        @orig_sombrero_url = @orig_image_url
         @result.map! do |r|
           file_url = File.join(@options[:html_prefix], r[1])
           [r[0], file_url, file_url]
         end
         if @options[:sombrero_url]
+          md5 = /[0-9a-f]{32}/.match(@orig_image_url)[0]
+          @orig_sombrero_url = File.join(@options[:sombrero_url], 'photo/md5', md5)
           @result.map! do |r|
             md5 = /[0-9a-f]{32}/.match(r[1])[0]
             sombrero_url = File.join(@options[:sombrero_url], "photo/md5", md5)
