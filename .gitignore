@@ -5,6 +5,7 @@
 *.bmp
 *.txt
 *.html
+*.tar
 rdoc/
 pkg/
 .ruby-version
