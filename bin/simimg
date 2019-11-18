@@ -215,12 +215,13 @@ EOT
           file_url = File.join(@options[:html_prefix], r[1])
           [r[0], file_url, file_url]
         end
-      elsif @options[:sombrero_url]
-        @result.map! do |r|
-          file_url = @options[:html_prefix] ? File.join(@options[:html_prefix], r[1]) : r[1]
-          md5 = /[0-9a-f]{32}/.match(r[1])[0]
-          sombrero_url = File.join(@options[:sombrero_url], "photo/md5", md5)
-          [r[0], file_url, sombrero_url]
+        if @options[:sombrero_url]
+          @result.map! do |r|
+            md5 = /[0-9a-f]{32}/.match(r[1])[0]
+            sombrero_url = File.join(@options[:sombrero_url], "photo/md5", md5)
+            r[2] = sombrero_url
+            r
+          end
         end
       else
         @orig_image_url = @orig_image
